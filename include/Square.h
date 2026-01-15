@@ -12,6 +12,8 @@ public:
     Point<T> geometricCenter() const override;
     std::string getName() const override { return "Square"; }
     bool isValid() const override;
+
+    void display(std::ostream& os) const override;
     
     Square& operator=(const Square& other);
 };
