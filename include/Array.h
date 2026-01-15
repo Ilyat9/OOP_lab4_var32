@@ -2,79 +2,69 @@
 #include <memory>
 #include <stdexcept>
 #include <algorithm>
-#include "Figure.h"
+#include <utility>
 
-template<class T>
+template<typename T>
 class Array {
 private:
-    std::shared_ptr<T[]> data;
-    size_t capacity;
-    size_t size;
+    std::unique_ptr<T[]> _items; 
+    size_t _capacity;
+    size_t _count;
     
-    void resize(size_t newCapacity) {
-        std::shared_ptr<T[]> newData(new T[newCapacity]);
-        for (size_t i = 0; i < size; ++i) {
-            newData[i] = std::move(data[i]);
+    void expand_storage(size_t target_capacity) {
+        std::unique_ptr<T[]> new_items(new T[target_capacity]);
+        
+        for (size_t i = 0; i < _count; ++i) {
+            new_items[i] = std::move(_items[i]);
         }
         
-        data = std::move(newData);
-        capacity = newCapacity;
+        _items = std::move(new_items);
+        _capacity = target_capacity;
     }
     
 public:
-    Array() : data(nullptr), capacity(0), size(0) {}
+    Array() : _items(nullptr), _capacity(0), _count(0) {}
     
-    Array(size_t initialCapacity) : capacity(initialCapacity), size(0) {
-        data = std::shared_ptr<T[]>(new T[initialCapacity]);
+    explicit Array(size_t start_capacity) : _capacity(start_capacity), _count(0) {
+        _items = std::unique_ptr<T[]>(new T[start_capacity]);
     }
     
     ~Array() = default;
     
-    void push_back(const T& value) {
-        if (size >= capacity) {
-            resize(capacity == 0 ? 1 : capacity * 2);
+    void add_element(T value) { 
+        if (_count >= _capacity) {
+            expand_storage(_capacity == 0 ? 2 : _capacity * 2);
         }
-        data[size++] = value;
+        _items[_count++] = std::move(value);
     }
     
-    void push_back(T&& value) {
-        if (size >= capacity) {
-            resize(capacity == 0 ? 1 : capacity * 2);
-        }
-        data[size++] = std::move(value);
-    }
-    
-    void remove(size_t index) {
-        if (index >= size) {
-            throw std::out_of_range("Index out of range");
+    void erase_at(size_t idx) {
+        if (idx >= _count) {
+            throw std::out_of_range("Array Error: Accessing element beyond total count");
         }
         
-        for (size_t i = index; i < size - 1; ++i) {
-            data[i] = std::move(data[i + 1]);
+        for (size_t i = idx; i < _count - 1; ++i) {
+            _items[i] = std::move(_items[i + 1]);
         }
-        --size;
+        --_count;
     }
     
-    T& operator[](size_t index) {
-        if (index >= size) {
-            throw std::out_of_range("Index out of range");
-        }
-        return data[index];
+    T& operator[](size_t idx) {
+        if (idx >= _count) throw std::out_of_range("Array Error: Index out of bounds");
+        return _items[idx];
     }
     
-    const T& operator[](size_t index) const {
-        if (index >= size) {
-            throw std::out_of_range("Index out of range");
-        }
-        return data[index];
+    const T& operator[](size_t idx) const {
+        if (idx >= _count) throw std::out_of_range("Array Error: Index out of bounds");
+        return _items[idx];
     }
     
-    size_t getSize() const { return size; }
-    size_t getCapacity() const { return capacity; }
+    size_t length() const { return _count; }
+    size_t current_capacity() const { return _capacity; }
     
-    void clear() {
-        data.reset();
-        size = 0;
-        capacity = 0;
+    void reset() {
+        _items.reset();
+        _count = 0;
+        _capacity = 0;
     }
 };
