@@ -18,11 +18,11 @@ std::unique_ptr<Figure<T>> createFigure(int type) {
     std::cin >> param;
     
     switch(type) {
-        case 1: // Octagon
+        case 1:
             return std::make_unique<Octagon<T>>(center, param);
-        case 2: // Triangle
+        case 2:
             return std::make_unique<Triangle<T>>(center, param);
-        case 3: // Square
+        case 3:
             return std::make_unique<Square<T>>(center, param);
         default:
             return nullptr;
@@ -32,7 +32,7 @@ std::unique_ptr<Figure<T>> createFigure(int type) {
 template<Scalar T>
 void printAllGeometricCenters(const Array<std::shared_ptr<Figure<T>>>& array) {
     std::cout << "\nGeometric centers:\n";
-    for (size_t i = 0; i < array.getSize(); ++i) {
+    for (size_t i = 0; i < array.length(); ++i) {
         std::cout << i << ": " << array[i]->geometricCenter() << std::endl;
     }
 }
@@ -40,7 +40,7 @@ void printAllGeometricCenters(const Array<std::shared_ptr<Figure<T>>>& array) {
 template<Scalar T>
 void printAllVertices(const Array<std::shared_ptr<Figure<T>>>& array) {
     std::cout << "\nVertices of all figures:\n";
-    for (size_t i = 0; i < array.getSize(); ++i) {
+    for (size_t i = 0; i < array.length(); ++i) {
         std::cout << i << ": ";
         for (const auto& vertex : array[i]->getVertices()) {
             std::cout << *vertex << " ";
@@ -52,7 +52,7 @@ void printAllVertices(const Array<std::shared_ptr<Figure<T>>>& array) {
 template<Scalar T>
 void printAllAreas(const Array<std::shared_ptr<Figure<T>>>& array) {
     std::cout << "\nAreas of all figures:\n";
-    for (size_t i = 0; i < array.getSize(); ++i) {
+    for (size_t i = 0; i < array.length(); ++i) {
         std::cout << i << ": " << array[i]->area() << std::endl;
     }
 }
@@ -60,13 +60,12 @@ void printAllAreas(const Array<std::shared_ptr<Figure<T>>>& array) {
 template<Scalar T>
 double calculateTotalArea(const Array<std::shared_ptr<Figure<T>>>& array) {
     double total = 0;
-    for (size_t i = 0; i < array.getSize(); ++i) {
+    for (size_t i = 0; i < array.length(); ++i) {
         total += static_cast<double>(*array[i]);
     }
     return total;
 }
 
-// Явные инстанцирования
 template std::unique_ptr<Figure<int>> createFigure<int>(int);
 template std::unique_ptr<Figure<double>> createFigure<double>(int);
 template std::unique_ptr<Figure<float>> createFigure<float>(int);
