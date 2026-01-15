@@ -47,7 +47,7 @@ int main() {
                 case 3: {
                     auto fig = createFigure<double>(choice);
                     if (fig && fig->isValid()) {
-                        figures.push_back(std::move(fig));
+                        figures.add_element(std::move(fig));
                         std::cout << "Фигура успешно добавлена!\n";
                     } else if (fig) {
                         std::cout << "Фигура создана, но не прошла проверку валидности.\n";
@@ -68,16 +68,16 @@ int main() {
                               << calculateTotalArea(figures) << std::endl;
                     break;
                 case 8: {
-                    if (figures.getSize() == 0) {
+                    if (figures.length() == 0) {
                         std::cout << "Массив пуст!\n";
                         break;
                     }
                     std::cout << "Введите индекс фигуры для удаления (0-"
-                              << figures.getSize() - 1 << "): ";
+                              << figures.length() - 1 << "): ";
                     size_t index;
                     std::cin >> index;
-                    if (index < figures.getSize()) {
-                        figures.remove(index);
+                    if (index < figures.length()) {
+                        figures.erase_at(index);
                         std::cout << "Фигура удалена.\n";
                     } else {
                         std::cout << "Неверный индекс!\n";
@@ -85,11 +85,11 @@ int main() {
                     break;
                 }
                 case 9:
-                    if (figures.getSize() == 0) {
+                    if (figures.length() == 0) {
                         std::cout << "Нет фигур для вывода.\n";
                     } else {
                         std::cout << "\nВсе фигуры:\n";
-                        for (size_t i = 0; i < figures.getSize(); ++i) {
+                        for (size_t i = 0; i < figures.length(); ++i) {
                             std::cout << i << ": " << *figures[i] << std::endl;
                         }
                     }
