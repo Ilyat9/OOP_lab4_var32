@@ -4,13 +4,17 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include <limits>
+#include <concepts>
+#include <type_traits>
+
+template<typename T>
+concept Scalar = std::is_arithmetic_v<T>;
 
 template<Scalar T>
 class Figure {
 protected:
-    using PointPtr = std::unique_ptr<Point<T>>;
-    std::vector<PointPtr> vertices;
+    using VertexPtr = std::unique_ptr<Point<T>>;
+    std::vector<VertexPtr> _points; 
 
 public:
     virtual ~Figure() = default;
@@ -19,43 +23,42 @@ public:
     virtual Point<T> geometricCenter() const = 0;
     virtual std::string getName() const = 0;
 
-    // Новая функция: проверка правильности фигуры
     virtual bool isValid() const {
-        if (vertices.size() < 3) return false;
-        // Проверка на совпадение вершин
-        for (size_t i = 0; i < vertices.size(); ++i) {
-            for (size_t j = i + 1; j < vertices.size(); ++j) {
-                if (*vertices[i] == *vertices[j]) return false;
+        if (_points.size() < 3) return false;
+        
+        for (size_t i = 0; i < _points.size(); ++i) {
+            for (size_t j = i + 1; j < _points.size(); ++j) {
+                if (*_points[i] == *_points[j]) return false;
             }
         }
         return true;
     }
 
-    const std::vector<PointPtr>& getVertices() const { return vertices; }
+    const std::vector<VertexPtr>& getVertices() const { return _points; }
 
     virtual operator double() const {
         return area();
     }
 
     bool operator==(const Figure& other) const {
-        if (vertices.size() != other.vertices.size()) return false;
-        for (size_t i = 0; i < vertices.size(); ++i) {
-            if (!(*vertices[i] == *other.vertices[i])) return false;
+        if (_points.size() != other._points.size()) return false;
+        for (size_t i = 0; i < _points.size(); ++i) {
+            if (!(*_points[i] == *other._points[i])) return false;
         }
         return true;
     }
 
-    virtual void print(std::ostream& os) const {
-        os << getName() << ": ";
-        for (const auto& vertex : vertices) {
-            os << *vertex << " ";
+    virtual void display(std::ostream& os) const {
+        os << getName() << " | Vertices: ";
+        for (const auto& v : _points) {
+            os << *v << " ";
         }
-        os << "Center: " << geometricCenter() << ", Area: " << area();
-        if (!isValid()) os << " [INVALID FIGURE]";
+        os << " | Center: " << geometricCenter() << " | Area: " << area();
+        if (!isValid()) os << " (Warning: Geometry is Invalid)";
     }
 
     friend std::ostream& operator<<(std::ostream& os, const Figure& fig) {
-        fig.print(os);
+        fig.display(os);
         return os;
     }
 };
